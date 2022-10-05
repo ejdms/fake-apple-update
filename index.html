@@ -8,6 +8,7 @@
 		<style>
 			:root {
 				--bar-width: 320px;
+				font-family: sans-serif;
 			}
 			@keyframes logoAnimation {
 				from {
@@ -31,6 +32,29 @@
 				margin: 0;
 				padding: 0;
 				box-sizing: border-box;
+			}
+			.hideCursor {
+				cursor: none;
+			}
+			#fullscreenInfo {
+				opacity: 1;
+				transition: opacity 0.3s;
+
+				position: fixed;
+				top: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 300px;
+				height: 50px;
+				background-color: rgba(255, 255, 255, 0.2);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				border-radius: 20px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			#fullscreenInfo.hidden {
+				opacity: 0;
 			}
 			#root {
 				display: flex;
@@ -85,6 +109,7 @@
 	</head>
 	<body>
 		<div id="root">
+			<div id="fullscreenInfo">Press F to toggle fullscreen</div>
 			<div id="logo">
 				<img src="./logo.png" />
 			</div>
@@ -95,6 +120,7 @@
 		</div>
 	</body>
 	<script>
+		// screen lock
 		let screenLock = null
 		const isScreenLockSupported = 'wakeLock' in navigator
 
@@ -112,7 +138,7 @@
 
 		if (isScreenLockSupported) {
 			document.addEventListener('visibilitychange', async () => {
-				screenLock = getScreenLock()
+				screenLock = await getScreenLock()
 			})
 		} else {
 			alert(`can't lock your screen to never turn off | use chrome`)
@@ -120,6 +146,33 @@
 
 		getScreenLock()
 
+		// fullscreen
+		const root = document.querySelector('#root')
+		const fullscreenInfo = document.querySelector('#fullscreenInfo')
+
+		function toggleFullScreen() {
+			if (!document.fullscreenElement) {
+				document.documentElement.requestFullscreen()
+			} else if (document.exitFullscreen) {
+				document.exitFullscreen()
+			}
+			root.classList.toggle('hideCursor')
+		}
+
+		document.addEventListener(
+			'keydown',
+			(e) => {
+				if (e.key === 'f') {
+					toggleFullScreen()
+					if (!fullscreenInfo.classList.contains('hidden')) {
+						fullscreenInfo.classList.add('hidden')
+					}
+				}
+			},
+			false
+		)
+
+		// animations and stuff
 		const bar = document.querySelector('#bar')
 		let percentage = 0
 		bar.style.borderWidth = '0px'
