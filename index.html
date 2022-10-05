@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Fake Apple Updater</title>
+		<style>
+			:root {
+				--bar-width: 320px;
+			}
+			@keyframes logoAnimation {
+				from {
+					filter: invert(1) drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+				}
+				to {
+					filter: invert(0.8) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+				}
+			}
+			@keyframes shadowAnimation {
+				0% {
+					left: 0;
+					transform: translateX(calc(-1 * var(--bar-width)));
+				}
+				100% {
+					left: var(--bar-width);
+					transform: translateX(var(--bar-width));
+				}
+			}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			#root {
+				display: flex;
+				flex-direction: column;
+				height: 100vh;
+				width: 100%;
+				justify-content: center;
+				align-items: center;
+				background-color: #000;
+				color: #fff;
+			}
+			#logo img {
+				width: 100px;
+				height: auto;
+
+				animation: logoAnimation 3s linear 0s infinite alternate;
+			}
+			#barWrapper {
+				position: relative;
+				margin-top: 70px;
+				width: var(--bar-width);
+				height: 10px;
+				background-color: rgba(255, 255, 255, 0.2);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				border-radius: 400px;
+				overflow: hidden;
+			}
+			#bar {
+				width: 0%;
+				height: 100%;
+				transition: width 1s;
+				border: 1px solid rgba(255, 255, 255, 0.9);
+				background: linear-gradient(
+					rgba(255, 255, 255, 0.65),
+					rgba(255, 255, 255, 0.8)
+				);
+				box-shadow: 2px 0px 1px 0px rgb(0, 0, 0, 0.3);
+			}
+			#shadow {
+				--shadow-color: rgba(0, 0, 0, 0.3);
+				position: absolute;
+				top: 0;
+				left: 0;
+				transform: translateX(calc(-1 * var(--bar-width)));
+				width: 10%;
+				height: 100%;
+				background-color: var(--shadow-color);
+				box-shadow: 0px 0px 80px 80px var(--shadow-color);
+				animation: shadowAnimation 8s linear 0s infinite forwards;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="root">
+			<div id="logo">
+				<img src="./logo.png" />
+			</div>
+			<div id="barWrapper">
+				<div id="bar"></div>
+				<div id="shadow"></div>
+			</div>
+		</div>
+	</body>
+	<script>
+		const bar = document.querySelector('#bar')
+		let percentage = 0
+		bar.style.borderWidth = '0px'
+
+		function getRandomInt(range, offset = 0) {
+			return Math.floor(Math.random() * range + offset)
+		}
+
+		function getRandomTimeout() {
+			return getRandomInt(15000, 15000)
+		}
+
+		function update() {
+			if (percentage === 0) {
+				bar.style.borderWidth = '0px'
+			}
+
+			let percentageDiff = getRandomInt(10)
+
+			if (percentage + percentageDiff >= 100) {
+				percentageDiff = 100 - percentage
+			}
+
+			percentage += percentageDiff
+
+			bar.style.width = percentage + '%'
+			bar.style.borderWidth = '1px'
+
+			const widthTrasitionTime = Math.floor(percentageDiff * 0.5)
+			bar.style.transition = `width ${widthTrasitionTime}s`
+
+			if (percentage === 100) {
+				percentage = 0
+			}
+
+			let timeout = getRandomInt(15000, 15000)
+
+			if (timeout <= widthTrasitionTime) {
+				timeout = widthTrasitionTime * 1000 + getRandomInt(5000, 2000)
+			}
+
+			setTimeout(update, timeout)
+		}
+		setTimeout(update, getRandomInt(2000, 4000))
+	</script>
+</html>
