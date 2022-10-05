@@ -95,6 +95,31 @@
 		</div>
 	</body>
 	<script>
+		let screenLock = null
+		const isScreenLockSupported = 'wakeLock' in navigator
+
+		async function getScreenLock() {
+			if (isScreenLockSupported && document.visibilityState === 'visible') {
+				let screenLock
+				try {
+					screenLock = await navigator.wakeLock.request('screen')
+				} catch (err) {
+					alert(`can't lock your screen to never turn off | idk why :/`)
+				}
+				return screenLock
+			}
+		}
+
+		if (isScreenLockSupported) {
+			document.addEventListener('visibilitychange', async () => {
+				screenLock = getScreenLock()
+			})
+		} else {
+			alert(`can't lock your screen to never turn off | use chrome`)
+		}
+
+		getScreenLock()
+
 		const bar = document.querySelector('#bar')
 		let percentage = 0
 		bar.style.borderWidth = '0px'
